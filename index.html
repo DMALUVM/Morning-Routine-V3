@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily Routine Tracker</title>
+  <style>
+    /* Base layout and font */
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f3f4f6;
+      color: #111827;
+    }
+
+    /* Dark mode base */
+    html.dark body {
+      background-color: #111827;
+      color: #f3f4f6;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1024px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
+    /* Headers and text */
+    h1 {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .text-sm {
+      font-size: 0.875rem;
+    }
+
+    .font-bold {
+      font-weight: bold;
+    }
+
+    .font-semibold {
+      font-weight: 600;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    /* Flex utilities */
+    .flex {
+      display: flex;
+    }
+
+    .justify-between {
+      justify-content: space-between;
+    }
+
+    .justify-end {
+      justify-content: flex-end;
+    }
+
+    .items-center {
+      align-items: center;
+    }
+
+    .space-x-4 > *:not(:last-child) {
+      margin-right: 1rem;
+    }
+
+    /* Borders and shadows */
+    .border {
+      border-width: 1px;
+      border-style: solid;
+    }
+
+    .border-gray-300 {
+      border-color: #d1d5db;
+    }
+
+    html.dark .border-gray-600 {
+      border-color: #4b5563;
+    }
+
+    .rounded-lg {
+      border-radius: 0.5rem;
+    }
+
+    .shadow-md {
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Backgrounds */
+    .bg-white {
+      background-color: #ffffff;
+    }
+
+    html.dark .bg-gray-800 {
+      background-color: #1f2937;
+    }
+
+    .bg-gray-100 {
+      background-color: #f3f4f6;
+    }
+
+    html.dark .bg-gray-900 {
+      background-color: #111827;
+    }
+
+    .bg-gray-200 {
+      background-color: #e5e7eb;
+    }
+
+    html.dark .bg-gray-700 {
+      background-color: #374151;
+    }
+
+    .bg-blue-500 {
+      background-color: #3b82f6;
+    }
+
+    .bg-blue-600 {
+      background-color: #2563eb;
+    }
+
+    /* Text colors */
+    .text-gray-900 {
+      color: #111827;
+    }
+
+    html.dark .text-white {
+      color: #ffffff;
+    }
+
+    .text-blue-500 {
+      color: #3b82f6;
+    }
+
+    .text-gray-600 {
+      color: #4b5563;
+    }
+
+    html.dark .text-gray-300 {
+      color: #d1d5db;
+    }
+
+    .text-red-500 {
+      color: #ef4444;
+    }
+
+    /* Hover effects */
+    .hover\:underline:hover {
+      text-decoration: underline;
+    }
+
+    .hover\:bg-blue-600:hover {
+      background-color: #2563eb;
+    }
+
+    /* Transitions */
+    .transition {
+      transition-property: all;
+      transition-duration: 150ms;
+    }
+
+    /* Grid for forms */
+    .grid {
+      display: grid;
+    }
+
+    .gap-2 {
+      gap: 0.5rem;
+    }
+
+    @media (min-width: 640px) {
+      .sm\:grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .sm\:col-span-2 {
+      grid-column: span 2 / span 2;
+    }
+
+    /* Modals */
+    .fixed {
+      position: fixed;
+    }
+
+    .inset-0 {
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+    }
+
+    .bg-black\/50 {
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .z-50 {
+      z-index: 50;
+    }
+
+    .rounded-xl {
+      border-radius: 0.75rem;
+    }
+
+    .shadow-xl {
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .p-4 {
+      padding: 1rem;
+    }
+
+    .w-80 {
+      width: 20rem;
+    }
+
+    .max-w-full {
+      max-width: 100%;
+    }
+
+    /* Progress bar */
+    .rounded-full {
+      border-radius: 9999px;
+    }
+
+    .h-2\.5 {
+      height: 0.625rem;
+    }
+
+    #progressBar {
+      transition: width 0.3s ease;
+    }
+
+    /* Calendar grid layout */
+    #calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin-top: 1rem;
+    }
+
+    /* Calendar grid day styling */
+    .calendar-day {
+      width: 100%;
+      padding: 0.5rem;
+      min-height: 100px;
+      border: 1px solid #d1d5db;
+      border-radius: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.2s;
+      background-color: #ffffff;
+    }
+
+    .calendar-day:hover {
+      border-color: #3b82f6;
+      transform: scale(1.02);
+    }
+
+    /* Icon in top-right */
+    .status-icon {
+      position: absolute;
+      top: 4px;
+      right: 6px;
+      font-size: 1rem;
+    }
+
+    /* Emoji badges */
+    .badge-row {
+      font-size: 1rem;
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      margin-top: auto;
+    }
+
+    /* Completed/incomplete/partial coloring */
+    .complete {
+      background-color: #dcfce7;
+      color: #166534;
+    }
+
+    .incomplete {
+      background-color: #fee2e2;
+      color: #991b1b;
+    }
+
+    .partial {
+      background-color: #fef3c7;
+      color: #92400e;
+    }
+
+    /* Highlight today's cell */
+    .today {
+      outline: 3px solid #3b82f6;
+      outline-offset: 2px;
+      box-shadow: 0 0 0 2px #ffffff, 0 0 10px 3px rgba(59, 130, 246, 0.6);
+      z-index: 1;
+      position: relative;
+    }
+
+    /* Progress bar inside day cell */
+    .progress-bar {
+      height: 5px;
+      background-color: #3b82f6;
+      border-radius: 3px;
+      margin-top: 4px;
+      transition: width 0.3s ease;
+    }
+
+    /* Strike-through for completed */
+    input[type="checkbox"]:checked + span {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+
+    /* Responsive tweaks */
+    @media (max-width: 768px) {
+      #calendar {
+        gap: 4px;
+      }
+
+      .calendar-day {
+        min-height: 80px;
+        padding: 0.3rem;
+        font-size: 0.9rem;
+      }
+
+      .badge-row {
+        font-size: 0.8rem;
+        gap: 2px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .calendar-day {
+        min-height: 60px;
+        padding: 0.2rem;
+        font-size: 0.8rem;
+      }
+
+      .status-icon {
+        font-size: 0.85rem;
+      }
+
+      .badge-row {
+        font-size: 0.75rem;
+      }
+    }
+
+    /* Dark mode support */
+    html.dark .calendar-day {
+      border-color: #374151;
+      background-color: #1f2937;
+    }
+
+    html.dark .calendar-day:hover {
+      border-color: #60a5fa;
+    }
+
+    html.dark .complete {
+      background-color: #14532d;
+      color: #bbf7d0;
+    }
+
+    html.dark .incomplete {
+      background-color: #7f1d1d;
+      color: #fecaca;
+    }
+
+    html.dark .partial {
+      background-color: #713f12;
+      color: #fde68a;
+    }
+
+    html.dark .today {
+      box-shadow: 0 0 0 2px #1f2937, 0 0 10px 3px #60a5fa;
+    }
+
+    html.dark .progress-bar {
+      background-color: #60a5fa;
+    }
+
+    /* Margin utilities */
+    .mb-4 {
+      margin-bottom: 1rem;
+    }
+
+    .mb-6 {
+      margin-bottom: 1.5rem;
+    }
+
+    .mt-3 {
+      margin-top: 0.75rem;
+    }
+
+    .mt-2 {
+      margin-top: 0.5rem;
+    }
+
+    .mx-auto {
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🌅 Daily Routine Tracker</h1>
+
+    <div class="flex justify-between items-center mb-4">
+      <div>
+        <p id="streak" class="text-sm">🔥 Streak: 0 days</p>
+        <p id="ytd" class="text-sm">📆 YTD: 0 days</p>
+        <p id="saunaYTD" class="text-sm">🔥 Sauna YTD: 0</p>
+        <p id="coldYTD" class="text-sm">🧊 Cold YTD: 0</p>
+        <p id="trtYTD" class="text-sm">💉 TRT YTD: 0</p>
+        <button id="viewStats" class="text-sm text-blue-500 hover:underline">View All Stats</button>
+      </div>
+      <div class="flex items-center space-x-4">
+        <button id="prevMonth" class="text-blue-500 hover:underline" aria-label="Previous Month">← Prev</button>
+        <h2 id="monthYear" class="font-semibold text-lg" aria-live="polite"></h2>
+        <button id="nextMonth" class="text-blue-500 hover:underline" aria-label="Next Month">Next →</button>
+        <button id="themeToggle" class="text-blue-500 hover:underline" aria-label="Toggle Dark Mode">🌙</button>
+        <button id="exportCSV" class="text-blue-500 hover:underline" aria-label="Export CSV">Export CSV</button>
+      </div>
+    </div>
+
+    <!-- Today's Checklist -->
+    <div class="mb-6 p-4 border border-gray-300 rounded-lg bg-white shadow-md">
+      <h2 class="text-lg font-semibold mb-2">✅ Today’s Checklist</h2>
+      <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+        <div id="progressBar" class="bg-blue-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+      </div>
+      <form id="todayForm" class="grid gap-2 sm:grid-cols-2">
+        <label class="flex items-center space-x-2"><input type="checkbox" name="breathwork"><span>🧘 Breathwork</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="hydration"><span>💧 Hydration</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="reading"><span>📖 Reading</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="mobility"><span>🤸 Mobility</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="exercise"><span>🏋️ Exercise</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="supplements"><span>💊 Supplements</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="sauna"><span>🔥 Sauna</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="cold"><span>🧊 Cold Plunge</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="trt"><span>💉 TRT Injection</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="redlight"><span>🔴 Red Light Therapy</span></label>
+        <div class="flex justify-end sm:col-span-2 mt-3">
+          <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition">Save Today</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Calendar -->
+    <div id="calendar" class="grid grid-cols-7 gap-2 text-center text-sm"></div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div id="editModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
+    <div class="bg-white rounded-xl shadow-xl p-4 w-80 max-w-full">
+      <h3 class="text-lg font-bold mb-2 text-center">Edit Day</h3>
+      <form id="editForm" class="grid gap-2 sm:grid-cols-2">
+        <label class="flex items-center space-x-2"><input type="checkbox" name="breathwork"><span>🧘 Breathwork</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="hydration"><span>💧 Hydration</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="reading"><span>📖 Reading</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="mobility"><span>🤸 Mobility</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="exercise"><span>🏋️ Exercise</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="supplements"><span>💊 Supplements</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="sauna"><span>🔥 Sauna</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="cold"><span>🧊 Cold Plunge</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="trt"><span>💉 TRT Injection</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="redlight"><span>🔴 Red Light Therapy</span></label>
+        <div class="flex justify-between sm:col-span-2 mt-3">
+          <button type="button" id="cancelEdit" class="text-sm text-gray-600 hover:underline">Cancel</button>
+          <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Stats Modal -->
+  <div id="statsModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
+    <div class="bg-white rounded-xl shadow-xl p-4 w-80 max-w-full">
+      <h3 class="text-lg font-bold mb-2 text-center">Habit Stats YTD</h3>
+      <div class="grid gap-2 text-sm">
+        <p id="stats-breathwork"></p>
+        <p id="stats-hydration"></p>
+        <p id="stats-reading"></p>
+        <p id="stats-mobility"></p>
+        <p id="stats-exercise"></p>
+        <p id="stats-supplements"></p>
+        <p id="stats-sauna"></p>
+        <p id="stats-cold"></p>
+        <p id="stats-trt"></p>
+        <p id="stats-redlight"></p>
+      </div>
+      <div class="flex justify-center mt-3">
+        <button id="closeStats" class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition">Close</button>
+      </div>
+      <button id="clearData" class="text-red-500 text-sm mt-2 block mx-auto hover:underline">Clear All Data</button>
+    </div>
+  </div>
+
+  <script>
+    const habits = ['breathwork', 'hydration', 'reading', 'mobility', 'exercise', 'supplements', 'sauna', 'cold', 'trt', 'redlight'];
+    const coreHabits = ['breathwork', 'hydration', 'reading', 'mobility', 'exercise', 'supplements'];
+    const optionalHabits = ['sauna', 'cold', 'trt', 'redlight'];
+    const habitEmojis = {
+      breathwork: '🧘',
+      hydration: '💧',
+      reading: '📖',
+      mobility: '🤸',
+      exercise: '🏋️',
+      supplements: '💊',
+      sauna: '🔥',
+      cold: '🧊',
+      trt: '💉',
+      redlight: '🔴'
+    };
+
+    function getData() {
+      return JSON.parse(localStorage.getItem('routineData') || '{}');
+    }
+
+    function saveData(data) {
+      localStorage.setItem('routineData', JSON.stringify(data));
+    }
+
+    let currentDate = new Date(2025, 6, 16); // July 16, 2025
+    let viewDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+
+    function formatDate(d) {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function isCompleted(dayData) {
+      return coreHabits.every(h => dayData[h]);
+    }
+
+    function calculateStreak(data) {
+      let streak = 0;
+      let tempDate = new Date(currentDate);
+      while (true) {
+        const dateStr = formatDate(tempDate);
+        const dayData = data[dateStr];
+        if (dayData && isCompleted(dayData)) {
+          streak++;
+          tempDate.setDate(tempDate.getDate() - 1);
+        } else {
+          break;
+        }
+      }
+      return streak;
+    }
+
+    function calculateYTD(data, year) {
+      let ytd = 0;
+      let counts = {};
+      habits.forEach(h => counts[h] = 0);
+      Object.keys(data).forEach(key => {
+        if (key.startsWith(year + '-')) {
+          const dayData = data[key];
+          if (isCompleted(dayData)) ytd++;
+          habits.forEach(h => {
+            if (dayData[h]) counts[h]++;
+          });
+        }
+      });
+      return { ytd, counts };
+    }
+
+    function updateStats() {
+      const data = getData();
+      const year = currentDate.getFullYear().toString();
+      const { ytd, counts } = calculateYTD(data, year);
+      const streak = calculateStreak(data);
+      document.getElementById('streak').textContent = `🔥 Streak: ${streak} day${streak !== 1 ? 's' : ''}`;
+      document.getElementById('ytd').textContent = `📆 YTD: ${ytd} day${ytd !== 1 ? 's' : ''}`;
+      document.getElementById('saunaYTD').textContent = `🔥 Sauna YTD: ${counts.sauna}`;
+      document.getElementById('coldYTD').textContent = `🧊 Cold YTD: ${counts.cold}`;
+      document.getElementById('trtYTD').textContent = `💉 TRT YTD: ${counts.trt}`;
+      return { streak, ytd, counts };
+    }
+
+    function renderCalendar() {
+      const calendar = document.getElementById('calendar');
+      calendar.innerHTML = '';
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      days.forEach(day => {
+        const div = document.createElement('div');
+        div.textContent = day;
+        div.className = 'font-bold text-center';
+        calendar.appendChild(div);
+      });
+      const firstDay = new Date(viewDate.getFullYear(), viewDate.getMonth(), 1).getDay();
+      const lastDate = new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 0).getDate();
+      for (let i = 0; i < firstDay; i++) {
+        const emptyDiv = document.createElement('div');
+        calendar.appendChild(emptyDiv);
+      }
+      const data = getData();
+      let todayEl = null;
+      for (let d = 1; d <= lastDate; d++) {
+        const dayDiv = document.createElement('div');
+        dayDiv.className = 'calendar-day';
+        const date = new Date(viewDate.getFullYear(), viewDate.getMonth(), d);
+        const dateStr = formatDate(date);
+        if (dateStr === formatDate(currentDate)) {
+          dayDiv.className += ' today';
+          todayEl = dayDiv;
+        }
+        const dayNumber = document.createElement('span');
+        dayNumber.textContent = d;
+        dayNumber.className = 'font-medium';
+        dayDiv.appendChild(dayNumber);
+        const statusIcon = document.createElement('span');
+        statusIcon.className = 'status-icon';
+        dayDiv.appendChild(statusIcon);
+        const badgeRow = document.createElement('div');
+        badgeRow.className = 'badge-row';
+        dayDiv.appendChild(badgeRow);
+        const progressContainer = document.createElement('div');
+        progressContainer.className = 'w-full bg-gray-200 h-1.5 rounded';
+        const progressBar = document.createElement('div');
+        progressBar.className = 'progress-bar h-full rounded';
+        progressContainer.appendChild(progressBar);
+        dayDiv.appendChild(progressContainer);
+        const dayData = data[dateStr] || {};
+        const count = habits.reduce((acc, h) => acc + (dayData[h] ? 1 : 0), 0);
+        const percent = (count / habits.length) * 100;
+        progressBar.style.width = `${percent}%`;
+        const ok = isCompleted(dayData);
+        if (date > currentDate) {
+          statusIcon.textContent = '--';
+          dayDiv.style.cursor = 'default';
+          dayDiv.style.opacity = '0.5';
+        } else {
+          if (ok) {
+            statusIcon.textContent = '✅';
+            dayDiv.className += ' complete';
+          } else if (count === 0) {
+            statusIcon.textContent = '❌';
+            dayDiv.className += ' incomplete';
+          } else {
+            statusIcon.textContent = '📊';
+            dayDiv.className += ' partial';
+          }
+          optionalHabits.forEach(h => {
+            if (dayData[h]) {
+              const emoji = document.createElement('span');
+              emoji.textContent = habitEmojis[h];
+              emoji.title = capitalize(h);
+              badgeRow.appendChild(emoji);
+            }
+          });
+          dayDiv.onclick = () => openEditModal(dateStr);
+        }
+        calendar.appendChild(dayDiv);
+      }
+      if (todayEl) {
+        setTimeout(() => todayEl.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+      }
+      document.getElementById('monthYear').textContent = viewDate.toLocaleString('default', { month: 'long', year: 'numeric' });
+    }
+
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    function loadToday() {
+      const data = getData();
+      const dayData = data[formatDate(currentDate)] || {};
+      habits.forEach(h => {
+        document.querySelector(`#todayForm input[name="${h}"]`).checked = !!dayData[h];
+      });
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const checked = document.querySelectorAll('#todayForm input[type="checkbox"]:checked').length;
+      const percent = (checked / habits.length) * 100;
+      document.getElementById('progressBar').style.width = `${percent}%`;
+    }
+
+    let editDate;
+    function openEditModal(dateStr) {
+      editDate = dateStr;
+      const data = getData();
+      const dayData = data[dateStr] || {};
+      habits.forEach(h => {
+        document.querySelector(`#editForm input[name="${h}"]`).checked = !!dayData[h];
+      });
+      document.getElementById('editModal').style.display = 'flex';
+    }
+
+    function closeEditModal() {
+      document.getElementById('editModal').style.display = 'none';
+    }
+
+    function exportToCSV() {
+      const data = getData();
+      let csv = 'Date,' + habits.join(',') + '\n';
+      Object.keys(data).sort().forEach(date => {
+        let row = date;
+        habits.forEach(h => {
+          row += ',' + (data[date][h] ? 1 : 0);
+        });
+        csv += row + '\n';
+      });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'daily_routine_tracker.csv';
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function updateThemeToggle() {
+      const isDark = document.documentElement.classList.contains('dark');
+      document.getElementById('themeToggle').textContent = isDark ? '☀️' : '🌙';
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+      updateThemeToggle();
+    }
+
+    // Initialization
+    const storedTheme = localStorage.getItem('theme');
+    if (storedTheme === 'dark' || (!storedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    }
+    updateThemeToggle();
+    document.getElementById('themeToggle').onclick = toggleTheme;
+
+    loadToday();
+    updateStats();
+    renderCalendar();
+
+    habits.forEach(h => {
+      const checkbox = document.querySelector(`#todayForm input[name="${h}"]`);
+      checkbox.onchange = updateProgress;
+    });
+
+    document.getElementById('todayForm').onsubmit = e => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const dayData = {};
+      habits.forEach(h => dayData[h] = formData.get(h) === 'on');
+      const data = getData();
+      data[formatDate(currentDate)] = dayData;
+      saveData(data);
+      updateStats();
+      renderCalendar();
+      loadToday();
+    };
+
+    document.getElementById('editForm').onsubmit = e => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const dayData = {};
+      habits.forEach(h => dayData[h] = formData.get(h) === 'on');
+      const data = getData();
+      data[editDate] = dayData;
+      saveData(data);
+      updateStats();
+      renderCalendar();
+      if (editDate === formatDate(currentDate)) loadToday();
+      closeEditModal();
+    };
+
+    document.getElementById('cancelEdit').onclick = closeEditModal;
+
+    document.getElementById('prevMonth').onclick = () => {
+      viewDate.setMonth(viewDate.getMonth() - 1);
+      renderCalendar();
+    };
+
+    document.getElementById('nextMonth').onclick = () => {
+      viewDate.setMonth(viewDate.getMonth() + 1);
+      renderCalendar();
+    };
+
+    document.getElementById('exportCSV').onclick = exportToCSV;
+
+    document.getElementById('viewStats').onclick = () => {
+      const { counts } = updateStats();
+      habits.forEach(h => {
+        document.getElementById(`stats-${h}`).textContent = `${habitEmojis[h]} ${capitalize(h)}: ${counts[h]}`;
+      });
+      document.getElementById('statsModal').style.display = 'flex';
+    };
+
+    document.getElementById('closeStats').onclick = () => {
+      document.getElementById('statsModal').style.display = 'none';
+    };
+
+    document.getElementById('clearData').onclick = () => {
+      if (confirm('Are you sure you want to clear all data? This cannot be undone.')) {
+        localStorage.removeItem('routineData');
+        updateStats();
+        renderCalendar();
+        loadToday();
+        document.getElementById('statsModal').style.display = 'none';
+      }
+    };
+  </script>
+</body>
+</html>
