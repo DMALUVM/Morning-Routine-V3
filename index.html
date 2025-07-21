@@ -458,7 +458,10 @@
         <label class="flex items-center space-x-2"><input type="checkbox" name="breathwork"><span>🧘 Breathwork</span></label>
         <label class="flex items-center space-x-2"><input type="checkbox" name="hydration"><span>💧 Hydration</span></label>
         <label class="flex items-center space-x-2"><input type="checkbox" name="exercise"><span>🏋️ Exercise</span></label>
-        <label class="flex items-center space-x-2"><input type="checkbox" name="supplements"><span>💊 Supplements</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="creatine"><span>💪 Creatine</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="magnesium"><span>🧂 Magnesium</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="nattokinase"><span>🩸 Nattokinase</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="vitamin_c"><span>🍊 Vitamin C</span></label>
         <label class="flex items-center space-x-2"><input type="checkbox" name="sauna"><span>🔥 Sauna (Optional)</span></label>
         <label class="flex items-center space-x-2"><input type="checkbox" name="cold"><span>🧊 Cold Plunge (Optional)</span></label>
         <label id="trtLabel" class="flex items-center space-x-2 hidden"><input type="checkbox" name="trt"><span>💉 TRT Injection</span></label>
@@ -481,7 +484,10 @@
         <label class="flex items-center space-x-2"><input type="checkbox" name="breathwork"><span>🧘 Breathwork</span></label>
         <label class="flex items-center space-x-2"><input type="checkbox" name="hydration"><span>💧 Hydration</span></label>
         <label class="flex items-center space-x-2"><input type="checkbox" name="exercise"><span>🏋️ Exercise</span></label>
-        <label class="flex items-center space-x-2"><input type="checkbox" name="supplements"><span>💊 Supplements</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="creatine"><span>💪 Creatine</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="magnesium"><span>🧂 Magnesium</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="nattokinase"><span>🩸 Nattokinase</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="vitamin_c"><span>🍊 Vitamin C</span></label>
         <label class="flex items-center space-x-2"><input type="checkbox" name="sauna"><span>🔥 Sauna (Optional)</span></label>
         <label class="flex items-center space-x-2"><input type="checkbox" name="cold"><span>🧊 Cold Plunge (Optional)</span></label>
         <label id="editTrtLabel" class="flex items-center space-x-2"><input type="checkbox" name="trt"><span>💉 TRT Injection</span></label>
@@ -502,7 +508,10 @@
         <p id="stats-breathwork"></p>
         <p id="stats-hydration"></p>
         <p id="stats-exercise"></p>
-        <p id="stats-supplements"></p>
+        <p id="stats-creatine"></p>
+        <p id="stats-magnesium"></p>
+        <p id="stats-nattokinase"></p>
+        <p id="stats-vitamin_c"></p>
         <p id="stats-sauna"></p>
         <p id="stats-cold"></p>
         <p id="stats-trt"></p>
@@ -517,14 +526,17 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const habits = ['breathwork', 'hydration', 'exercise', 'supplements', 'sauna', 'cold', 'trt', 'redlight'];
-      const coreHabits = ['breathwork', 'hydration', 'exercise', 'supplements'];
+      const habits = ['breathwork', 'hydration', 'exercise', 'creatine', 'magnesium', 'nattokinase', 'vitamin_c', 'sauna', 'cold', 'trt', 'redlight'];
+      const coreHabits = ['breathwork', 'hydration', 'exercise', 'creatine', 'magnesium', 'nattokinase', 'vitamin_c'];
       const optionalHabits = ['sauna', 'cold', 'redlight'];
       const habitEmojis = {
         breathwork: '🧘',
         hydration: '💧',
         exercise: '🏋️',
-        supplements: '💊',
+        creatine: '💪',
+        magnesium: '🧂',
+        nattokinase: '🩸',
+        vitamin_c: '🍊',
         sauna: '🔥',
         cold: '🧊',
         trt: '💉',
@@ -716,9 +728,9 @@
       }
 
       function updateProgress() {
-        const checkboxes = document.querySelectorAll('#todayForm input[type="checkbox"]:not([name="trt"])');
+        const checkboxes = document.querySelectorAll('#todayForm input[type="checkbox"]');
         const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
-        const total = isTRTDay(currentDate) ? coreHabits.length + 1 : coreHabits.length;
+        const total = checkboxes.length;
         const percent = (checked / total) * 100;
         document.getElementById('progressBar').style.width = `${percent}%`;
       }
