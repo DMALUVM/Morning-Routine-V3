@@ -577,4 +577,303 @@
       function calculateYTD(data, year) {
         let ytd = 0;
         let counts = {};
-        habits.forEach(h => counts
+        habits.forEach(h => counts[h] = 0);
+        Object.keys(data).forEach(key => {
+          if (key.startsWith(year + '-')) {
+            const dayData = data[key];
+            if (isCompleted(dayData)) ytd++;
+            habits.forEach(h => {
+              if (dayData[h]) counts[h]++;
+            });
+          }
+        });
+        return { ytd, counts };
+      }
+
+      function updateStats() {
+        const data = getData();
+        const year = currentDate.getFullYear().toString();
+        const { ytd, counts } = calculateYTD(data, year);
+        const streak = calculateStreak(data);
+        document.getElementById('streak').textContent = `🔥 Streak: ${streak} day${streak !== 1 ? 's' : ''}`;
+        document.getElementById('ytd').textContent = `📆 YTD: ${ytd} day${ytd !== 1 ? 's' : ''}`;
+        document.getElementById('saunaYTD').textContent = `🔥 Sauna YTD: ${counts.sauna}`;
+        document.getElementById('coldYTD').textContent = `🧊 Cold YTD: ${counts.cold}`;
+        document.getElementById('trtYTD').textContent = `💉 TRT YTD: ${counts.trt}`;
+        document.getElementById('redlightYTD').textContent = `🔴 Red Light YTD: ${counts.redlight}`;
+        return { streak, ytd, counts };
+      }
+
+      function renderCalendar() {
+        const calendar = document.getElementById('calendar');
+        calendar.innerHTML = '';
+        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        days.forEach(day => {
+          const div = document.createElement('div');
+          div.textContent = day;
+          div.className = 'font-bold text-center';
+          calendar.appendChild(div);
+        });
+        const firstDay = new Date(viewDate.getFullYear(), viewDate.getMonth(), 1).getDay();
+        const lastDate = new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 0).getDate();
+        for (let i = 0; i < firstDay; i++) {
+          const emptyDiv = document.createElement('div');
+          calendar.appendChild(emptyDiv);
+        }
+        const data = getData();
+        let todayEl = null;
+        for (let d = 1; d <= lastDate; d++) {
+          const dayDiv = document.createElement('div');
+          dayDiv.className = 'calendar-day';
+          const date = new Date(viewDate.getFullYear(), viewDate.getMonth(), d);
+          const dateStr = formatDate(date);
+          if (dateStr === formatDate(currentDate)) {
+            dayDiv.className += ' today';
+            todayEl = dayDiv;
+          }
+          const dayNumber = document.createElement('span');
+          dayNumber.textContent = d;
+          dayNumber.className = 'font-medium';
+          dayDiv.appendChild(dayNumber);
+          const statusIcon = document.createElement('span');
+          statusIcon.className = 'status-icon';
+          dayDiv.appendChild(statusIcon);
+          const badgeRow = document.createElement('div');
+          badgeRow.className = 'badge-row';
+          if (isTRTDay(date) && !data[dateStr]?.trt) { // Only show TRT icon if not completed
+            const trtIcon = document.createElement('span');
+            trtIcon.textContent = '💉';
+            trtIcon.title = 'TRT Day';
+            badgeRow.appendChild(trtIcon);
+          }
+          dayDiv.appendChild(badgeRow);
+          const progressContainer = document.createElement('div');
+          progressContainer.className = 'w-full bg-gray-200 h-1.5 rounded';
+          const progressBar = document.createElement('div');
+          progressBar.className = 'progress-bar h-full rounded';
+          progressContainer.appendChild(progressBar);
+          dayDiv.appendChild(progressContainer);
+          const dayData = data[dateStr] || {};
+          const count = coreHabits.reduce((acc, h) => acc + (dayData[h] ? 1 : 0), 0);
+          const percent = (count / coreHabits.length) * 100;
+          progressBar.style.width = `${percent}%`;
+          const ok = isCompleted(dayData);
+          if (date > currentDate) {
+            statusIcon.textContent = '--';
+            dayDiv.style.cursor = 'default';
+            dayDiv.style.opacity = '0.5';
+          } else {
+            if (ok) {
+              statusIcon.textContent = '✅';
+              dayDiv.className += ' complete';
+            } else if (count === 0) {
+              statusIcon.textContent = '❌';
+              dayDiv.className += ' incomplete';
+            } else {
+              statusIcon.textContent = '📊';
+              dayDiv.className += ' partial';
+            }
+            optionalHabits.forEach(h => {
+              if (dayData[h]) {
+                const emoji = document.createElement('span');
+                emoji.textContent = habitEmojis[h];
+                emoji.title = capitalize(h);
+                badgeRow.appendChild(emoji);
+              }
+            });
+            if (dayData.trt && isTRTDay(date)) {
+              const emoji = document.createElement('span');
+              emoji.textContent = habitEmojis.trt;
+              emoji.title = 'TRT Injection';
+              badgeRow.appendChild(emoji);
+            }
+            dayDiv.onclick = () => openEditModal(dateStr, date);
+          }
+          calendar.appendChild(dayDiv);
+        }
+        if (todayEl) {
+          setTimeout(() => todayEl.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+        }
+        document.getElementById('monthYear').textContent = viewDate.toLocaleString('default', { month: 'long', year: 'numeric' });
+      }
+
+      function capitalize(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+      }
+
+      function loadToday() {
+        const data = getData();
+        const dayData = data[formatDate(currentDate)] || {};
+        habits.forEach(h => {
+          const checkbox = document.querySelector(`#todayForm input[name="${h}"]`);
+          if (checkbox) {
+            checkbox.checked = !!dayData[h];
+          }
+        });
+        const trtLabel = document.getElementById('trtLabel');
+        trtLabel.classList.toggle('hidden', !isTRTDay(currentDate));
+        updateProgress();
+      }
+
+      function updateProgress() {
+        const checkboxes = document.querySelectorAll('#todayForm input[type="checkbox"]:not([name="trt"])');
+        const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+        const total = isTRTDay(currentDate) ? coreHabits.length + 1 : coreHabits.length;
+        const percent = (checked / total) * 100;
+        document.getElementById('progressBar').style.width = `${percent}%`;
+      }
+
+      let editDate;
+      function openEditModal(dateStr, date) {
+        editDate = dateStr;
+        const data = getData();
+        const dayData = data[dateStr] || {};
+        habits.forEach(h => {
+          const checkbox = document.querySelector(`#editForm input[name="${h}"]`);
+          if (checkbox) {
+            checkbox.checked = !!dayData[h];
+          }
+        });
+        const trtLabel = document.getElementById('editTrtLabel');
+        trtLabel.classList.toggle('hidden', !isTRTDay(date));
+        document.getElementById('editModal').style.display = 'flex';
+      }
+
+      function closeEditModal() {
+        document.getElementById('editModal').style.display = 'none';
+        editDate = null; // Clear editDate to prevent stale references
+      }
+
+      function exportToCSV() {
+        const data = getData();
+        let csv = 'Date,' + habits.join(',') + '\n';
+        Object.keys(data).sort().forEach(date => {
+          let row = date;
+          habits.forEach(h => {
+            row += ',' + (data[date][h] ? 1 : 0);
+          });
+          csv += row + '\n';
+        });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'daily_routine_tracker.csv';
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
+      function updateThemeToggle() {
+        const isDark = document.documentElement.classList.contains('dark');
+        document.getElementById('themeToggle').textContent = isDark ? '☀️' : '🌙';
+      }
+
+      function toggleTheme() {
+        const html = document.documentElement;
+        html.classList.toggle('dark');
+        localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+        updateThemeToggle();
+      }
+
+      // Initialization
+      const storedTheme = localStorage.getItem('theme');
+      if (storedTheme === 'dark' || (!storedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+      updateThemeToggle();
+      document.getElementById('themeToggle').onclick = toggleTheme;
+
+      loadToday();
+      updateStats();
+      renderCalendar();
+
+      habits.forEach(h => {
+        const checkbox = document.querySelector(`#todayForm input[name="${h}"]`);
+        if (checkbox) {
+          checkbox.onchange = updateProgress;
+        }
+      });
+
+      document.getElementById('todayForm').onsubmit = e => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const dayData = {};
+        habits.forEach(h => {
+          if (h !== 'trt' || isTRTDay(currentDate)) {
+            dayData[h] = formData.get(h) === 'on';
+          } else {
+            dayData[h] = false; // Ensure TRT is false for non-TRT days
+          }
+        });
+        const data = getData();
+        data[formatDate(currentDate)] = dayData;
+        saveData(data);
+        updateStats();
+        renderCalendar();
+        loadToday();
+      };
+
+      document.getElementById('editForm').onsubmit = e => {
+        e.preventDefault();
+        if (!editDate) return; // Prevent saving if editDate is not set
+        const formData = new FormData(e.target);
+        const dayData = {};
+        habits.forEach(h => {
+          if (h !== 'trt' || isTRTDay(new Date(editDate))) {
+            dayData[h] = formData.get(h) === 'on';
+          } else {
+            dayData[h] = false; // Ensure TRT is false for non-TRT days
+          }
+        });
+        const data = getData();
+        data[editDate] = dayData;
+        saveData(data);
+        updateStats();
+        renderCalendar();
+        if (editDate === formatDate(currentDate)) {
+          loadToday();
+        }
+        closeEditModal();
+      };
+
+      document.getElementById('cancelEdit').onclick = closeEditModal;
+
+      document.getElementById('prevMonth').onclick = () => {
+        viewDate.setMonth(viewDate.getMonth() - 1);
+        renderCalendar();
+      };
+
+      document.getElementById('nextMonth').onclick = () => {
+        viewDate.setMonth(viewDate.getMonth() + 1);
+        renderCalendar();
+      };
+
+      document.getElementById('exportCSV').onclick = exportToCSV;
+
+      document.getElementById('viewStats').onclick = () => {
+        const { counts } = updateStats();
+        habits.forEach(h => {
+          document.getElementById(`stats-${h}`).textContent = `${habitEmojis[h]} ${capitalize(h)}: ${counts[h]}`;
+        });
+        document.getElementById('statsModal').style.display = 'flex';
+      };
+
+      document.getElementById('closeStats').onclick = () => {
+        document.getElementById('statsModal').style.display = 'none';
+      };
+
+      document.getElementById('clearData').onclick = () => {
+        if (confirm('Are you sure you want to clear all data? This cannot be undone.')) {
+          localStorage.removeItem('routineData');
+          updateStats();
+          renderCalendar();
+          loadToday();
+          document.getElementById('statsModal').style.display = 'none';
+        }
+      };
+    });
+  </script>
+</body>
+</html>
