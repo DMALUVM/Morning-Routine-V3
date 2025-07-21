@@ -457,7 +457,6 @@
       <form id="todayForm" class="grid gap-2 sm:grid-cols-2">
         <label class="flex items-center space-x-2"><input type="checkbox" name="breathwork"><span>🧘 Breathwork</span></label>
         <label class="flex items-center space-x-2"><input type="checkbox" name="hydration"><span>💧 Hydration</span></label>
-        <label class="flex items-center space-x-2"><input type="checkbox" name="reading"><span>📖 Reading</span></label>
         <label class="flex items-center space-x-2"><input type="checkbox" name="exercise"><span>🏋️ Exercise</span></label>
         <label class="flex items-center space-x-2"><input type="checkbox" name="supplements"><span>💊 Supplements</span></label>
         <label class="flex items-center space-x-2"><input type="checkbox" name="sauna"><span>🔥 Sauna (Optional)</span></label>
@@ -474,14 +473,13 @@
     <div id="calendar" class="grid grid-cols-7 gap-2 text-center text-sm"></div>
   </div>
 
-  <!-- Edit Modal -->
+    <!-- Edit Modal -->
   <div id="editModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
     <div class="bg-white rounded-xl shadow-xl p-4 w-80 max-w-full">
       <h3 class="text-lg font-bold mb-2 text-center">Edit Day</h3>
       <form id="editForm" class="grid gap-2 sm:grid-cols-2">
         <label class="flex items-center space-x-2"><input type="checkbox" name="breathwork"><span>🧘 Breathwork</span></label>
         <label class="flex items-center space-x-2"><input type="checkbox" name="hydration"><span>💧 Hydration</span></label>
-        <label class="flex items-center space-x-2"><input type="checkbox" name="reading"><span>📖 Reading</span></label>
         <label class="flex items-center space-x-2"><input type="checkbox" name="exercise"><span>🏋️ Exercise</span></label>
         <label class="flex items-center space-x-2"><input type="checkbox" name="supplements"><span>💊 Supplements</span></label>
         <label class="flex items-center space-x-2"><input type="checkbox" name="sauna"><span>🔥 Sauna (Optional)</span></label>
@@ -503,7 +501,6 @@
       <div class="grid gap-2 text-sm">
         <p id="stats-breathwork"></p>
         <p id="stats-hydration"></p>
-        <p id="stats-reading"></p>
         <p id="stats-exercise"></p>
         <p id="stats-supplements"></p>
         <p id="stats-sauna"></p>
@@ -520,13 +517,12 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const habits = ['breathwork', 'hydration', 'reading', 'exercise', 'supplements', 'sauna', 'cold', 'trt', 'redlight'];
-      const coreHabits = ['breathwork', 'hydration', 'reading', 'exercise', 'supplements'];
+      const habits = ['breathwork', 'hydration', 'exercise', 'supplements', 'sauna', 'cold', 'trt', 'redlight'];
+      const coreHabits = ['breathwork', 'hydration', 'exercise', 'supplements'];
       const optionalHabits = ['sauna', 'cold', 'redlight'];
       const habitEmojis = {
         breathwork: '🧘',
         hydration: '💧',
-        reading: '📖',
         exercise: '🏋️',
         supplements: '💊',
         sauna: '🔥',
@@ -644,7 +640,7 @@
           dayDiv.appendChild(statusIcon);
           const badgeRow = document.createElement('div');
           badgeRow.className = 'badge-row';
-          if (isTRTDay(date)) {
+          if (isTRTDay(date) && !data[dateStr]?.trt) { // Only show TRT icon if not completed
             const trtIcon = document.createElement('span');
             trtIcon.textContent = '💉';
             trtIcon.title = 'TRT Day';
