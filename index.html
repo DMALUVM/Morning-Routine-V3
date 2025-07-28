@@ -464,6 +464,504 @@
         <label class="flex items-center space-x-2"><input type="checkbox" name="vitamin_c"><span>🍊 Vitamin C</span></label>
         <label class="flex items-center space-x-2"><input type="checkbox" name="sauna"><span>🔥 Sauna (Optional)</span></label>
         <label class="flex items-center space-x-2"><input type="checkbox" name="cold"><span>🧊 Cold Plunge (Optional)</span></label>
+        <label id="trtLabel" class="flex items-center space-x-2 hidden"><input type="checkbox" name="trt"><span> The user says: "This code is great but I need to update my TRT injection from Monday thursday to Monday Wednesday Friday"
+
+The code is an HTML page for a Daily Routine Tracker. It includes a calendar, checklist for habits, and tracks TRT injections on specific days.
+
+In the script, the function isTRTDay(date) returns true if the day is Monday (1) or Thursday (4).
+
+The user wants to change it to Monday, Wednesday, Friday. So, days 1 (Mon), 3 (Wed), 5 (Fri).
+
+I need to update the code accordingly.
+
+In the isTRTDay function:
+
+return day === 1 || day === 4; // to change to day === 1 || day === 3 || day === 5;
+
+Also, update any comments or labels if necessary.
+
+In the badge row, it shows TRT icon if it's a TRT day and not completed.
+
+In the edit modal, it shows the TRT label if it's a TRT day.
+
+In today's form, same thing.
+
+The change is straightforward: update the isTRTDay function.
+
+The user provided the full HTML code, so I should output the updated HTML code.
+
+The current date is July 28, 2025, but since it's a code update, not relevant.
+
+No tools needed, as it's a code modification.
+
+My response should be the updated code.
+
+The user is asking to update the code, so provide the modified HTML.<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily Routine Tracker</title>
+  <style>
+    /* Base layout and font */
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f3f4f6;
+      color: #111827;
+    }
+
+    /* Dark mode base */
+    html.dark body {
+      background-color: #111827;
+      color: #f3f4f6;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1024px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
+    /* Headers and text */
+    h1 {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .text-sm {
+      font-size: 0.875rem;
+    }
+
+    .font-bold {
+      font-weight: bold;
+    }
+
+    .font-semibold {
+      font-weight: 600;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    /* Flex utilities */
+    .flex {
+      display: flex;
+    }
+
+    .justify-between {
+      justify-content: space-between;
+    }
+
+    .justify-end {
+      justify-content: flex-end;
+    }
+
+    .items-center {
+      align-items: center;
+    }
+
+    .space-x-4 > *:not(:last-child) {
+      margin-right: 1rem;
+    }
+
+    /* Borders and shadows */
+    .border {
+      border-width: 1px;
+      border-style: solid;
+    }
+
+    .border-gray-300 {
+      border-color: #d1d5db;
+    }
+
+    html.dark .border-gray-600 {
+      border-color: #4b5563;
+    }
+
+    .rounded-lg {
+      border-radius: 0.5rem;
+    }
+
+    .shadow-md {
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Backgrounds */
+    .bg-white {
+      background-color: #ffffff;
+    }
+
+    html.dark .bg-gray-800 {
+      background-color: #1f2937;
+    }
+
+    .bg-gray-100 {
+      background-color: #f3f4f6;
+    }
+
+    html.dark .bg-gray-900 {
+      background-color: #111827;
+    }
+
+    .bg-gray-200 {
+      background-color: #e5e7eb;
+    }
+
+    html.dark .bg-gray-700 {
+      background-color: #374151;
+    }
+
+    .bg-blue-500 {
+      background-color: #3b82f6;
+    }
+
+    .bg-blue-600 {
+      background-color: #2563eb;
+    }
+
+    /* Text colors */
+    .text-gray-900 {
+      color: #111827;
+    }
+
+    html.dark .text-white {
+      color: #ffffff;
+    }
+
+    .text-blue-500 {
+      color: #3b82f6;
+    }
+
+    .text-gray-600 {
+      color: #4b5563;
+    }
+
+    html.dark .text-gray-300 {
+      color: #d1d5db;
+    }
+
+    .text-red-500 {
+      color: #ef4444;
+    }
+
+    /* Hover effects */
+    .hover\:underline:hover {
+      text-decoration: underline;
+    }
+
+    .hover\:bg-blue-600:hover {
+      background-color: #2563eb;
+    }
+
+    /* Transitions */
+    .transition {
+      transition-property: all;
+      transition-duration: 150ms;
+    }
+
+    /* Grid for forms */
+    .grid {
+      display: grid;
+    }
+
+    .gap-2 {
+      gap: 0.5rem;
+    }
+
+    @media (min-width: 640px) {
+      .sm\:grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .sm\:col-span-2 {
+      grid-column: span 2 / span 2;
+    }
+
+    /* Modals */
+    .fixed {
+      position: fixed;
+    }
+
+    .inset-0 {
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+    }
+
+    .bg-black\/50 {
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .z-50 {
+      z-index: 50;
+    }
+
+    .rounded-xl {
+      border-radius: 0.75rem;
+    }
+
+    .shadow-xl {
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .p-4 {
+      padding: 1rem;
+    }
+
+    .w-80 {
+      width: 20rem;
+    }
+
+    .max-w-full {
+      max-width: 100%;
+    }
+
+    /* Progress bar */
+    .rounded-full {
+      border-radius: 9999px;
+    }
+
+    .h-2\.5 {
+      height: 0.625rem;
+    }
+
+    #progressBar {
+      transition: width 0.3s ease;
+    }
+
+    /* Calendar grid layout */
+    #calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin-top: 1rem;
+    }
+
+    /* Calendar grid day styling */
+    .calendar-day {
+      width: 100%;
+      padding: 0.5rem;
+      min-height: 100px;
+      border: 1px solid #d1d5db;
+      border-radius: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.2s;
+      background-color: #ffffff;
+    }
+
+    .calendar-day:hover {
+      border-color: #3b82f6;
+      transform: scale(1.02);
+    }
+
+    /* Icon in top-right */
+    .status-icon {
+      position: absolute;
+      top: 4px;
+      right: 6px;
+      font-size: 1rem;
+    }
+
+    /* Emoji badges */
+    .badge-row {
+      font-size: 1rem;
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      margin-top: auto;
+    }
+
+    /* Completed/incomplete/partial coloring */
+    .complete {
+      background-color: #dcfce7;
+      color: #166534;
+    }
+
+    .incomplete {
+      background-color: #fee2e2;
+      color: #991b1b;
+    }
+
+    .partial {
+      background-color: #fef3c7;
+      color: #92400e;
+    }
+
+    /* Highlight today's cell */
+    .today {
+      outline: 3px solid #3b82f6;
+      outline-offset: 2px;
+      box-shadow: 0 0 0 2px #ffffff, 0 0 10px 3px rgba(59, 130, 246, 0.6);
+      z-index: 1;
+      position: relative;
+    }
+
+    /* Progress bar inside day cell */
+    .progress-bar {
+      height: 5px;
+      background-color: #3b82f6;
+      border-radius: 3px;
+      margin-top: 4px;
+      transition: width 0.3s ease;
+    }
+
+    /* Strike-through for completed */
+    input[type="checkbox"]:checked + span {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+
+    /* Responsive tweaks */
+    @media (max-width: 768px) {
+      #calendar {
+        gap: 4px;
+      }
+
+      .calendar-day {
+        min-height: 80px;
+        padding: 0.3rem;
+        font-size: 0.9rem;
+      }
+
+      .badge-row {
+        font-size: 0.8rem;
+        gap: 2px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .calendar-day {
+        min-height: 60px;
+        padding: 0.2rem;
+        font-size: 0.8rem;
+      }
+
+      .status-icon {
+        font-size: 0.85rem;
+      }
+
+      .badge-row {
+        font-size: 0.75rem;
+      }
+    }
+
+    /* Dark mode support */
+    html.dark .calendar-day {
+      border-color: #374151;
+      background-color: #1f2937;
+    }
+
+    html.dark .calendar-day:hover {
+      border-color: #60a5fa;
+    }
+
+    html.dark .complete {
+      background-color: #14532d;
+      color: #bbf7d0;
+    }
+
+    html.dark .incomplete {
+      background-color: #7f1d1d;
+      color: #fecaca;
+    }
+
+    html.dark .partial {
+      background-color: #713f12;
+      color: #fde68a;
+    }
+
+    html.dark .today {
+      box-shadow: 0 0 0 2px #1f2937, 0 0 10px 3px #60a5fa;
+    }
+
+    html.dark .progress-bar {
+      background-color: #60a5fa;
+    }
+
+    /* Margin utilities */
+    .mb-4 {
+      margin-bottom: 1rem;
+    }
+
+    .mb-6 {
+      margin-bottom: 1.5rem;
+    }
+
+    .mt-3 {
+      margin-top: 0.75rem;
+    }
+
+    .mt-2 {
+      margin-top: 0.5rem;
+    }
+
+    .mx-auto {
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🌅 Daily Routine Tracker</h1>
+
+    <div class="flex justify-between items-center mb-4">
+      <div>
+        <p id="streak" class="text-sm">🔥 Streak: 0 days</p>
+        <p id="ytd" class="text-sm">📆 YTD: 0 days</p>
+        <p id="saunaYTD" class="text-sm">🔥 Sauna YTD: 0</p>
+        <p id="coldYTD" class="text-sm">🧊 Cold YTD: 0</p>
+        <p id="trtYTD" class="text-sm">💉 TRT YTD: 0</p>
+        <p id="redlightYTD" class="text-sm">🔴 Red Light YTD: 0</p>
+        <button id="viewStats" class="text-sm text-blue-500 hover:underline">View All Stats</button>
+      </div>
+      <div class="flex items-center space-x-4">
+        <button id="prevMonth" class="text-blue-500 hover:underline" aria-label="Previous Month">← Prev</button>
+        <h2 id="monthYear" class="font-semibold text-lg" aria-live="polite"></h2>
+        <button id="nextMonth" class="text-blue-500 hover:underline" aria-label="Next Month">Next →</button>
+        <button id="themeToggle" class="text-blue-500 hover:underline" aria-label="Toggle Dark Mode">🌙</button>
+        <button id="exportCSV" class="text-blue-500 hover:underline" aria-label="Export CSV">Export CSV</button>
+      </div>
+    </div>
+
+    <!-- Today's Checklist -->
+    <div class="mb-6 p-4 border border-gray-300 rounded-lg bg-white shadow-md">
+      <h2 class="text-lg font-semibold mb-2">✅ Today’s Checklist</h2>
+      <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+        <div id="progressBar" class="bg-blue-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+      </div>
+      <form id="todayForm" class="grid gap-2 sm:grid-cols-2">
+        <label class="flex items-center space-x-2"><input type="checkbox" name="breathwork"><span>🧘 Breathwork</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="hydration"><span>💧 Hydration</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="exercise"><span>🏋️ Exercise</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="creatine"><span>💪 Creatine</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="magnesium"><span>🧂 Magnesium</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="nattokinase"><span>🩸 Nattokinase</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="vitamin_c"><span>🍊 Vitamin C</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="sauna"><span>🔥 Sauna (Optional)</span></label>
+        <label class="flex items-center space-x-2"><input type="checkbox" name="cold"><span>🧊 Cold Plunge (Optional)</span></label>
         <label id="trtLabel" class="flex items-center space-x-2 hidden"><input type="checkbox" name="trt"><span>💉 TRT Injection</span></label>
         <label class="flex items-center space-x-2"><input type="checkbox" name="redlight"><span>🔴 Red Light Therapy (Optional)</span></label>
         <div class="flex justify-end sm:col-span-2 mt-3">
@@ -563,7 +1061,7 @@
 
       function isTRTDay(date) {
         const day = date.getDay();
-        return day === 1 || day === 4; // Monday or Thursday
+        return day === 1 || day === 3 || day === 5; // Monday, Wednesday, or Friday
       }
 
       function isCompleted(dayData) {
